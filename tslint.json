@@ -12,6 +12,5 @@
     "ordered-imports": true,
     "interface-name": false,
     "strict-null-checks": false
-  },
-  "rulesDirectory": []
+  }
 }
