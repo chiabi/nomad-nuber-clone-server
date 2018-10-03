@@ -111,3 +111,33 @@ class App {
 
 export default new App().app;
 ```
+
+- [graphql-tools](https://github.com/apollographql/graphql-tools): 간결한 방법으로 GraphQL schema 와 resolvers 를 자바스크립트로 작성하는 유틸리티 툴
+- [merge-graphql-schemas](https://github.com/okgrow/merge-graphql-schemas): GraphQL 서버 구현을 간단하게 만들어주고, type 과 resolver 파일을 모듈화해준다.
+
+※ 강의에서는 `GraphQLSchema[]`, `string[]`으로 해도 정상 작동하던데, 나는 type 에러가 남. `any[]` 로 바꿔주는 수밖에 없었음
+
+```ts
+// schema.ts
+// import { GraphQLSchema, GraphQLType } from "graphql";
+import { makeExecutableSchema } from "graphql-tools";
+import { fileLoader, mergeResolvers, mergeTypes } from "merge-graphql-schemas";
+import path from "path";
+// 여기서 에러
+const allTypes: any[] = fileLoader(path.join(__dirname, "./api/**/*.graphql"));
+// 여기서 에러
+const allResolvers: any[] = fileLoader(
+  // 배포용으로는 js파일로 바꿔야 하므로 .*로 파일확장자를 처리해줘야 충돌이 없음
+  path.join(__dirname, "./api/**/*.resolvers.*")
+);
+
+const mergedTypes = mergeTypes(allTypes);
+const mergedResolvers = mergeResolvers(allResolvers);
+
+const schema = makeExecutableSchema({
+  typeDefs: mergedTypes,
+  resolvers: mergedResolvers
+});
+
+export default schema;
+```
