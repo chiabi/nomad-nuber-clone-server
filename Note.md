@@ -141,3 +141,39 @@ const schema = makeExecutableSchema({
 
 export default schema;
 ```
+
+## GraphQL to Typescript
+
+타입스크립트로 무엇이 리턴될 지 알려주게 만들자.
+GraphQL 과 Typescript 를 연결하자
+
+다음 2 가지를 devDependencies 로 설치하자
+
+- [graphql-to-typescript](https://github.com/3VLINC/graphql-to-typescript)
+- [gql-merge](https://github.com/liamcurry/gql/tree/master/packages/gql-merge)
+
+```sh
+$ yarn add graphql-to-typescript gql-merge --dev
+```
+
+그리고 package.json 의 scripts 에 모든 graphql 파일들을 복제해 typescript definition 으로 바꾸는 명령어를 추가하자
+
+`graphql-to-typescript`에는 파일 하나만 입력할 수 있다. 그래서 `graphql` 파일을 모두 `export`해서 하나로 합치는 작업을 해야한다.
+
+```json
+{
+  "scripts": {
+    "dev": "cd src && nodemon --exec ts-node index.ts -e ts,graphql",
+    "pretypes": "gql-merge --out-file ./src/schema.graphql ./src/api/**/*.graphql",
+    "types": "graphql-to-typescript ./src/schema.graphql ./src/types/graph.d.ts"
+  }
+}
+```
+
+- grapql 을 모두 합쳐 하나의 파일로 만든다.
+- graphql 을 typescript 로 바꾼다. - typescript 로 인터페이스들이 생성되어 사용할 수 있게 된다.
+- resolver 에서 이러한 생성된 인터페이스들을 사용하면 리턴할 값이 무엇인지 알 수 있다.
+
+### d.ts
+
+타입스크립트 definition 파일, vscode 가 import 를 도와준다.
